@@ -2,9 +2,13 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-06-24.dahlia",
-});
+export const dynamic = "force-dynamic";
+
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-06-24.dahlia",
+  });
+}
 
 export async function POST(request: Request) {
   try {
@@ -15,6 +19,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing signature" }, { status: 400 });
     }
 
+    const stripe = getStripe();
     let event: Stripe.Event;
 
     try {
@@ -55,7 +60,6 @@ export async function POST(request: Request) {
               },
             });
 
-            // Find the actual parent of this student
             if (studentId) {
               const student = await prisma.student.findUnique({
                 where: { id: studentId },

@@ -3,9 +3,13 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-06-24.dahlia",
-});
+export const dynamic = "force-dynamic";
+
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-06-24.dahlia",
+  });
+}
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const stripe = getStripe();
     const { invoiceId } = await request.json();
 
     const invoice = await prisma.invoice.findUnique({
