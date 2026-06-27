@@ -30,20 +30,32 @@ import {
   X,
   ChevronRight,
   School,
+  Shield,
+  UserPlus,
+  TrendingUp,
+  BookMarked,
+  Bus,
+  Bell,
 } from "lucide-react";
 import { useState } from "react";
 
 const navConfig: Record<string, { label: string; icon: typeof LayoutDashboard; href: string }[]> = {
   admin: [
     { label: "Overview", icon: LayoutDashboard, href: "/dashboard/admin" },
+    { label: "Admission", icon: UserPlus, href: "/dashboard/admin/admission" },
     { label: "Users", icon: Users, href: "/dashboard/admin/users" },
     { label: "Classes", icon: BookOpen, href: "/dashboard/admin/classes" },
     { label: "Subjects", icon: GraduationCap, href: "/dashboard/admin/subjects" },
     { label: "Timetable", icon: Calendar, href: "/dashboard/admin/timetable" },
     { label: "Attendance", icon: ClipboardCheck, href: "/dashboard/admin/attendance" },
     { label: "Results", icon: BarChart3, href: "/dashboard/admin/results" },
+    { label: "Analytics", icon: TrendingUp, href: "/dashboard/admin/analytics" },
     { label: "Fees", icon: DollarSign, href: "/dashboard/admin/fees" },
+    { label: "Library", icon: BookMarked, href: "/dashboard/admin/library" },
+    { label: "Transport", icon: Bus, href: "/dashboard/admin/transport" },
     { label: "Announcements", icon: Megaphone, href: "/dashboard/admin/announcements" },
+    { label: "Notice Board", icon: Bell, href: "/dashboard/admin/noticeboard" },
+    { label: "2FA Management", icon: Shield, href: "/dashboard/admin/two-fa" },
   ],
   teacher: [
     { label: "Overview", icon: LayoutDashboard, href: "/dashboard/teacher" },
@@ -51,7 +63,9 @@ const navConfig: Record<string, { label: string; icon: typeof LayoutDashboard; h
     { label: "Attendance", icon: ClipboardCheck, href: "/dashboard/teacher/attendance" },
     { label: "Assignments", icon: FileText, href: "/dashboard/teacher/assignments" },
     { label: "Results", icon: BarChart3, href: "/dashboard/teacher/results" },
+    { label: "Analytics", icon: TrendingUp, href: "/dashboard/teacher/analytics" },
     { label: "Announcements", icon: Megaphone, href: "/dashboard/teacher/announcements" },
+    { label: "Notice Board", icon: Bell, href: "/dashboard/teacher/noticeboard" },
     { label: "Messages", icon: MessageSquare, href: "/dashboard/teacher/messages" },
   ],
   student: [
@@ -59,14 +73,19 @@ const navConfig: Record<string, { label: string; icon: typeof LayoutDashboard; h
     { label: "Timetable", icon: Calendar, href: "/dashboard/student/timetable" },
     { label: "Assignments", icon: FileText, href: "/dashboard/student/assignments" },
     { label: "Results", icon: BarChart3, href: "/dashboard/student/results" },
+    { label: "Analytics", icon: TrendingUp, href: "/dashboard/student/analytics" },
     { label: "Attendance", icon: ClipboardCheck, href: "/dashboard/student/attendance" },
+    { label: "Library", icon: BookMarked, href: "/dashboard/student/library" },
+    { label: "Transport", icon: Bus, href: "/dashboard/student/transport" },
     { label: "Announcements", icon: Megaphone, href: "/dashboard/student/announcements" },
+    { label: "Notice Board", icon: Bell, href: "/dashboard/student/noticeboard" },
   ],
   parent: [
     { label: "Overview", icon: LayoutDashboard, href: "/dashboard/parent" },
     { label: "My Children", icon: Users, href: "/dashboard/parent/children" },
     { label: "Fees & Payments", icon: DollarSign, href: "/dashboard/parent/fees" },
     { label: "Announcements", icon: Megaphone, href: "/dashboard/parent/announcements" },
+    { label: "Notice Board", icon: Bell, href: "/dashboard/parent/noticeboard" },
     { label: "Messages", icon: MessageSquare, href: "/dashboard/parent/messages" },
   ],
 };

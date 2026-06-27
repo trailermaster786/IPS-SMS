@@ -153,8 +153,15 @@ export default function LoginPage() {
         if (session?.user?.mustChangePassword) {
           router.push("/change-password");
         } else {
-          const role = session?.user?.role?.toLowerCase();
-          router.push(`/dashboard/${role}`);
+          const twoFAResponse = await fetch("/api/auth/2fa/status");
+          const twoFAData = await twoFAResponse.json();
+
+          if (twoFAData.enabled) {
+            router.push("/verify-2fa");
+          } else {
+            const role = session?.user?.role?.toLowerCase();
+            router.push(`/dashboard/${role}`);
+          }
         }
       }
     } catch {

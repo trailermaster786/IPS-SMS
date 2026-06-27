@@ -28,6 +28,7 @@ model User {
   sentMessages       Message[]      @relation("MessageSender")
   receivedMessages   Message[]      @relation("MessageReceiver")
   auditLogs          AuditLog[]
+  twoFactorCodes     TwoFactorCode[]
 }
 
 model Teacher {
@@ -62,6 +63,8 @@ model Student {
   results          Result[]
   submissions      Submission[]
   invoices         Invoice[]
+  bookLoans        BookLoan[]
+  studentRoutes    StudentRoute[]
 }
 
 model Parent {
@@ -270,4 +273,91 @@ model AuditLog {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Book {
+  id            String      @id @default(cuid())
+  title         String
+  author        String
+  isbn          String      @unique
+  category      String?
+  publisher     String?
+  publishYear   Int?
+  totalCopies   Int         @default(1)
+  availableCopies Int       @default(1)
+  createdAt     DateTime    @default(now())
+
+  copies        BookCopy[]
+}
+
+model BookCopy {
+  id            String   @id @default(cuid())
+  bookId        String
+  barcode       String   @unique
+  status        String   @default("AVAILABLE")
+
+  book          Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  loans         BookLoan[]
+}
+
+model BookLoan {
+  id            String   @id @default(cuid())
+  copyId        String
+  studentId     String
+  loanDate      DateTime @default(now())
+  dueDate       DateTime
+  returnDate    DateTime?
+  status        String   @default("BORROWED")
+
+  copy          BookCopy @relation(fields: [copyId], references: [id])
+  student       Student  @relation(fields: [studentId], references: [id])
+}
+
+model Vehicle {
+  id            String   @id @default(cuid())
+  name          String
+  plateNumber   String   @unique
+  capacity      Int
+  driverName    String?
+  driverPhone   String?
+  type          String   @default("Bus")
+
+  routes        Route[]
+}
+
+model Route {
+  id            String   @id @default(cuid())
+  name          String
+  vehicleId     String
+  stops         String
+  departureTime String
+  arrivalTime   String
+
+  vehicle       Vehicle  @relation(fields: [vehicleId], references: [id])
+  studentRoutes StudentRoute[]
+}
+
+model StudentRoute {
+  id            String   @id @default(cuid())
+  studentId     String
+  routeId       String
+  stopName      String?
+
+  student       Student  @relation(fields: [studentId], references: [id])
+  route         Route    @relation(fields: [routeId], references: [id])
+
+  @@unique([studentId, routeId])
+}
+
+model TwoFactorCode {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, code])
 }

@@ -466,6 +466,174 @@ async function main() {
   }
   console.log("Created attendance records");
 
+  // Create Library Books
+  const books = await Promise.all([
+    prisma.book.upsert({
+      where: { isbn: "978-0-13-468599-1" },
+      update: {},
+      create: {
+        title: "Introduction to Algorithms",
+        author: "Thomas H. Cormen",
+        isbn: "978-0-13-468599-1",
+        category: "Computer Science",
+        publisher: "MIT Press",
+        publishYear: 2009,
+        totalCopies: 3,
+        availableCopies: 2,
+      },
+    }),
+    prisma.book.upsert({
+      where: { isbn: "978-0-06-112008-4" },
+      update: {},
+      create: {
+        title: "To Kill a Mockingbird",
+        author: "Harper Lee",
+        isbn: "978-0-06-112008-4",
+        category: "Literature",
+        publisher: "Harper Perennial",
+        publishYear: 1960,
+        totalCopies: 5,
+        availableCopies: 4,
+      },
+    }),
+    prisma.book.upsert({
+      where: { isbn: "978-0-13-213080-6" },
+      update: {},
+      create: {
+        title: "Physics for Scientists and Engineers",
+        author: "Raymond A. Serway",
+        isbn: "978-0-13-213080-6",
+        category: "Science",
+        publisher: "Cengage Learning",
+        publishYear: 2013,
+        totalCopies: 4,
+        availableCopies: 3,
+      },
+    }),
+    prisma.book.upsert({
+      where: { isbn: "978-0-32-112521-7" },
+      update: {},
+      create: {
+        title: "Calculus: Early Transcendentals",
+        author: "James Stewart",
+        isbn: "978-0-32-112521-7",
+        category: "Mathematics",
+        publisher: "Cengage Learning",
+        publishYear: 2015,
+        totalCopies: 4,
+        availableCopies: 4,
+      },
+    }),
+    prisma.book.upsert({
+      where: { isbn: "978-0-14-028329-7" },
+      update: {},
+      create: {
+        title: "The Great Gatsby",
+        author: "F. Scott Fitzgerald",
+        isbn: "978-0-14-028329-7",
+        category: "Literature",
+        publisher: "Scribner",
+        publishYear: 1925,
+        totalCopies: 6,
+        availableCopies: 5,
+      },
+    }),
+  ]);
+  console.log("Created library books:", books.map((b: { title: string }) => b.title).join(", "));
+
+  // Create Book Copies
+  for (const book of books) {
+    for (let i = 1; i <= book.totalCopies; i++) {
+      await prisma.bookCopy.upsert({
+        where: { barcode: `${book.isbn}-${i}` },
+        update: {},
+        create: {
+          bookId: book.id,
+          barcode: `${book.isbn}-${i}`,
+          status: i <= book.availableCopies ? "AVAILABLE" : "BORROWED",
+        },
+      });
+    }
+  }
+  console.log("Created book copies");
+
+  // Create Vehicles
+  const vehicle1 = await prisma.vehicle.upsert({
+    where: { plateNumber: "SCH-001" },
+    update: {},
+    create: {
+      name: "School Bus Alpha",
+      plateNumber: "SCH-001",
+      capacity: 40,
+      driverName: "James Wilson",
+      driverPhone: "+1234567800",
+      type: "Bus",
+    },
+  });
+
+  const vehicle2 = await prisma.vehicle.upsert({
+    where: { plateNumber: "SCH-002" },
+    update: {},
+    create: {
+      name: "School Bus Beta",
+      plateNumber: "SCH-002",
+      capacity: 30,
+      driverName: "Mary Thompson",
+      driverPhone: "+1234567801",
+      type: "Bus",
+    },
+  });
+  console.log("Created vehicles:", vehicle1.name, vehicle2.name);
+
+  // Create Routes
+  const route1 = await prisma.route.create({
+    data: {
+      name: "North Route",
+      vehicleId: vehicle1.id,
+      stops: "Main St & 1st Ave, Oak Park, Elm Street, School Gate",
+      departureTime: "07:00",
+      arrivalTime: "07:45",
+    },
+  });
+
+  const route2 = await prisma.route.create({
+    data: {
+      name: "South Route",
+      vehicleId: vehicle2.id,
+      stops: "Central Station, River Rd, Pine Valley, School Gate",
+      departureTime: "07:15",
+      arrivalTime: "07:55",
+    },
+  });
+  console.log("Created routes:", route1.name, route2.name);
+
+  // Assign students to routes
+  await prisma.studentRoute.create({
+    data: { studentId: students[0].id, routeId: route1.id, stopName: "Oak Park" },
+  });
+  await prisma.studentRoute.create({
+    data: { studentId: students[1].id, routeId: route1.id, stopName: "Main St & 1st Ave" },
+  });
+  await prisma.studentRoute.create({
+    data: { studentId: students[2].id, routeId: route2.id, stopName: "Central Station" },
+  });
+  await prisma.studentRoute.create({
+    data: { studentId: students[3].id, routeId: route2.id, stopName: "River Rd" },
+  });
+  console.log("Created student-route assignments");
+
+  // Create Audit Log entries
+  await prisma.auditLog.create({
+    data: { userId: admin.id, action: "USER_CREATED", details: "Seeded admin user" },
+  });
+  await prisma.auditLog.create({
+    data: { userId: admin.id, action: "CLASS_CREATED", details: "Seeded classes" },
+  });
+  await prisma.auditLog.create({
+    data: { userId: admin.id, action: "FEE_STRUCTURE_CREATED", details: "Seeded fee structures" },
+  });
+  console.log("Created audit log entries");
+
   console.log("\nSeed completed successfully!");
   console.log("\nTest accounts:");
   console.log("Admin: admin@school.com / admin123");
